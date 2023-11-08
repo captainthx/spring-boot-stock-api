@@ -1,7 +1,7 @@
 mvn clean install
 
 if [ $? -eq 0 ];then
-  docker -build -t server .
+  docker build -t server .
   docker run --name server-container -d -p 8080:8080 server
   docker ps
 else
