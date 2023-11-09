@@ -19,7 +19,7 @@ if [ $? -eq 0 ]; then
   docker build -t $image_name .
 
   # Run a Docker container
-  docker run --name $container_name -v ${PWD}/logs:/logs -p 8080:8080 -d $image_name
+  docker run --name $container_name -v ${PWD}/logs:/logs -p 8081:8080 -d $image_name
 
   # Display a list of running Docker containers
   docker ps
