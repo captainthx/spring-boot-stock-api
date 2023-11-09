@@ -1,6 +1,6 @@
 package com.yutsuki.telegram.controller;
 
-import com.yutsuki.telegram.model.MsgRequest;
+import com.yutsuki.telegram.model.request.MsgRequest;
 import com.yutsuki.telegram.service.TelegramService;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

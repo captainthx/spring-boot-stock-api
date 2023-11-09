@@ -1,4 +1,4 @@
-package com.yutsuki.telegram.model;
+package com.yutsuki.telegram.model.request;
 
 import lombok.Getter;
 import lombok.Setter;
