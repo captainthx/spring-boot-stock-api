@@ -2,12 +2,15 @@ package com.yutsuki.telegram.service;
 
 import com.yutsuki.telegram.com.ResponseMessage;
 import com.yutsuki.telegram.entity.Account;
+import com.yutsuki.telegram.entity.LoginLogs;
 import com.yutsuki.telegram.exception.ErrorHandlingControllerAdvice;
 import com.yutsuki.telegram.exception.HandleException.*;
 import com.yutsuki.telegram.model.request.LoginRequest;
 import com.yutsuki.telegram.model.request.RegisterAccountRequest;
 import com.yutsuki.telegram.model.response.RegisterAccountResponse;
 import com.yutsuki.telegram.repository.AccountRepository;
+import com.yutsuki.telegram.repository.LoginLogsRepository;
+import com.yutsuki.telegram.utils.Comm;
 import com.yutsuki.telegram.utils.MapperUtils;
 import com.yutsuki.telegram.utils.ValidateUtil;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +20,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.xml.ws.Response;
 import java.util.HashMap;
 import java.util.Map;
@@ -32,17 +36,19 @@ public class AuthService {
     private TokenService tokenService;
     @Resource
     private AccountRepository accountRepository;
+    @Resource
+    private LoginLogsRepository loginLogsRepository;
 
     @Resource
     private PasswordEncoder passwordEncoder;
 
     public ResponseEntity<?> register(RegisterAccountRequest request) {
         if (ValidateUtil.invalidUsername(request.getUsername())) {
-            log.warn("Register account (block). [username is null]. req. {}", request);
+            log.warn("Register::(block). [username is null]. req. {}", request);
             return exception(ResponseMessage.INVALID_USERNAME.getMessage());
         }
         if (ValidateUtil.invalidPassword(request.getPassword())) {
-            log.warn("Register account (block). [password is null]. req{}", request);
+            log.warn("Register::(block). [password is null]. req{}", request);
             return exception(ResponseMessage.INVALID_PASSWORD.getMessage());
         }
 
@@ -54,17 +60,29 @@ public class AuthService {
         return ResponseEntity.ok(registerAccountResponse);
     }
 
-    public ResponseEntity<?> login(LoginRequest request) {
+    public ResponseEntity<?> login(LoginRequest request, HttpServletRequest httpServletRequest) {
+        String ipv4 = Comm.getIpAddress(httpServletRequest);
+        String userAgent = Comm.getUserAgent(httpServletRequest);
+        String deviceType = Comm.getDeviceType(userAgent);
+
         Optional<Account> optionalAccount = this.accountRepository.findByUsername(request.getUsername());
         if (!optionalAccount.isPresent()) {
-            log.warn("Login (block). [account not found]. req{}", request);
-            return exception(ResponseMessage.INVALID_ACCOUNT.getMessage());
+            log.warn("Login::(block). [account not found]. req{}", request);
+            return exception(ResponseMessage.INVALID_USERNAME.getMessage());
         }
         Account account = optionalAccount.get();
         if (!this.passwordEncoder.matches(request.getPassword(), account.getPassword())) {
-            log.warn("Login (block). [password not match]. req{}", request);
+            log.warn("Login::(block). [password not match]. req{}", request);
             return exception(ResponseMessage.PASSWORD_NOT_MATCH.getMessage());
         }
+        // set login logs
+        LoginLogs loginLogs = new LoginLogs();
+        loginLogs.setUid(account.getId());
+        loginLogs.setDevice(deviceType);
+        loginLogs.setIpv4(ipv4);
+        loginLogs.setUserAgent(userAgent);
+        this.loginLogsRepository.save(loginLogs);
+
         return ResponseEntity.ok(this.tokenService.generateToken(account));
     }
 

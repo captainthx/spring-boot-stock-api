@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 @RestController
@@ -22,8 +23,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request) {
-        return this.authService.login(request);
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request , HttpServletRequest httpServletRequest) {
+        return this.authService.login(request,httpServletRequest);
     }
 
 }

@@ -8,15 +8,19 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import java.io.Serializable;
 
 @Data
 @Entity(name = "product")
 @EqualsAndHashCode(callSuper = true)
-public class Product extends BaseEntity {
+public class Product extends BaseEntity implements Serializable {
+    @Column(name = "categoryId")
     private Long categoryId;
     private int stockQuantity;
-    @Column(length = 100,nullable = false)
+    @Column(length = 100, nullable = false)
     private String productName;
+    @Column(nullable = false)
+    private Float cost;
     @Column(nullable = false)
     private Float price;
 
@@ -24,4 +28,10 @@ public class Product extends BaseEntity {
     @ToString.Exclude
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
     private Category category;
+
+
+    @ManyToOne
+    @JoinColumn(name = "stockId", insertable = false, updatable = false)
+    private Stock stock;
+
 }

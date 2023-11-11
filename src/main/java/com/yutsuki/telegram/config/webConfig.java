@@ -6,6 +6,7 @@ import com.nimbusds.jose.jwk.RSAKey;
 import com.nimbusds.jose.jwk.source.ImmutableJWKSet;
 import com.nimbusds.jose.jwk.source.JWKSource;
 import com.nimbusds.jose.proc.SecurityContext;
+import com.yutsuki.telegram.exception.AccessDenied;
 import com.yutsuki.telegram.exception.AuthEntry;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -48,7 +49,7 @@ public class webConfig {
                 .sessionManagement((session) -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .exceptionHandling((exceptions) -> exceptions
                         .authenticationEntryPoint(new AuthEntry())
-                        .accessDeniedHandler(new BearerTokenAccessDeniedHandler())
+                        .accessDeniedHandler(new AccessDenied())
                 );
         return http.build();
     }

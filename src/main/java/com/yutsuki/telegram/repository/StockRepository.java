@@ -1,10 +1,10 @@
 package com.yutsuki.telegram.repository;
 
-import com.yutsuki.telegram.entity.Product;
+import com.yutsuki.telegram.entity.Stock;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductRepository extends JpaRepository<Product, Long> {
-    Page<Product> findAll(Pageable pageable);
+public interface StockRepository extends JpaRepository<Stock,Long> {
+    Page<Stock>findAll(Pageable pageable);
 }
