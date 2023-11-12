@@ -32,5 +32,5 @@ build/
 ### VS Code ###
 .vscode/
 
-.devapplication
-!**/src/main/resources/application.yml
+devapplication
+application.yml
