@@ -1,13 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://{your host}:3306/store?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=UTC
+    username: your username
+    password: your password
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    generate-ddl: true
+  redis:
+    host: yourhost
+    port: 6379
+    password: your password
+jwt:
+  private.key: classpath:app.key
+  public.key: classpath:app.pub
+  expire: 1h
+  issuer: yutsuki
+telegram:
+  url: https://api.telegram.org/bot%s/sendMessage
+  chat-id: your chat id
+  api-token: your api token
 logging:
   level:
     root: info
     org.springframework.web: info
     org.springframework.security: info
     com.yutsuki.telegram.service: debug
-jwt:
-  private.key : classpath:app.key
-  public.key : classpath:app.pub
-telegram:
-  url: https://api.telegram.org/bot%s/sendMessage
-  chat-id: 959034845
-  api-token: 6800120949:AAHeWsrkT38-SQHfoTLpkvEDk9KL-nDaY_8
