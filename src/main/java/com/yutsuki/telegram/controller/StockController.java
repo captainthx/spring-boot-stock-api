@@ -1,5 +1,6 @@
 package com.yutsuki.telegram.controller;
 
+import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.model.request.CreateStockRequest;
 import com.yutsuki.telegram.service.StockService;
 import org.springframework.http.ResponseEntity;
@@ -17,5 +18,10 @@ public class StockController {
     @PostMapping()
     public ResponseEntity<?> createStock(@Valid @RequestBody CreateStockRequest request) {
         return stockService.createStock(request);
+    }
+
+    @GetMapping
+    public ResponseEntity<?> getStocks(Pagination pagination) {
+        return stockService.findStockList(pagination);
     }
 }
