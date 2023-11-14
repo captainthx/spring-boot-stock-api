@@ -14,7 +14,7 @@ public class BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @CreationTimestamp
-    @Column(columnDefinition = "TIMESTAMP")
+    @Column(name = "cdt",columnDefinition = "TIMESTAMP")
     private LocalDateTime cdt;
     @UpdateTimestamp
     private LocalDateTime udt;

@@ -22,13 +22,13 @@ public class TelegramService {
     @Value("${telegram.api-token}")
     private String apiToken;
 
-    public void sendMessage(MsgRequest request) {
+    public void sendMessage(String request) {
         String messageUrl = String.format(telegramUrl, apiToken);
         // set headers
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
         // set payload
-        String jsonPayload = String.format("{\"chat_id\": \"%s\", \"text\": \"%s\"}", chatId, request.getText());
+        String jsonPayload = String.format("{\"chat_id\": \"%s\", \"text\": \"%s\"}", chatId, request);
         HttpEntity<String> entity = new HttpEntity<>(jsonPayload, headers);
         this.restTemplate.postForEntity(messageUrl, entity, String.class);
         log.debug("URL: {}", messageUrl);

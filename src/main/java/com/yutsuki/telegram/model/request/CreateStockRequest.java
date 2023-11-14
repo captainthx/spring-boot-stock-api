@@ -9,5 +9,4 @@ import java.util.List;
 @Setter
 public class CreateStockRequest {
     private String stockName;
-    List<Long>productIds;
 }

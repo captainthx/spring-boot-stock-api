@@ -2,8 +2,10 @@ package com.yutsuki.telegram.controller;
 
 import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.model.request.ProductCreateRequest;
+import com.yutsuki.telegram.model.request.UpdStockProductRequest;
 import com.yutsuki.telegram.service.ProductService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
@@ -17,12 +19,17 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<?>createProduct(@Valid @RequestBody ProductCreateRequest request){
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request) {
         return this.productService.createProduct(request);
     }
 
     @GetMapping
-    public ResponseEntity<?>findAllProduct(Pagination pagination){
+    public ResponseEntity<?> findAllProduct(Pagination pagination) {
         return this.productService.findAllProduct(pagination);
+    }
+
+    @PatchMapping
+    public ResponseEntity<?> updateProduct(@RequestBody UpdStockProductRequest request, Authentication authentication) {
+        return this.productService.updateProduct(authentication, request);
     }
 }

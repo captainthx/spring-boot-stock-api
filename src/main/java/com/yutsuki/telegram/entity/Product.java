@@ -11,11 +11,13 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 
 @Data
-@Entity(name = "product")
+@Entity(name = "ST_product")
 @EqualsAndHashCode(callSuper = true)
 public class Product extends BaseEntity implements Serializable {
     @Column(name = "categoryId")
     private Long categoryId;
+    @Column(name = "stockId")
+    private Long stockId;
     private int stockQuantity;
     @Column(length = 100, nullable = false)
     private String productName;
@@ -23,15 +25,17 @@ public class Product extends BaseEntity implements Serializable {
     private Float cost;
     @Column(nullable = false)
     private Float price;
-
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
     private Category category;
 
 
+
     @ManyToOne
+    @ToString.Exclude
     @JoinColumn(name = "stockId", insertable = false, updatable = false)
     private Stock stock;
+
 
 }

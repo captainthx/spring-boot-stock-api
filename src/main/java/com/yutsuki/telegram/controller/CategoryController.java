@@ -3,10 +3,7 @@ package com.yutsuki.telegram.controller;
 import com.yutsuki.telegram.model.request.CategoryCreateRequest;
 import com.yutsuki.telegram.service.CategoryService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -21,5 +18,9 @@ public class CategoryController {
     @PostMapping
     public ResponseEntity<?> createCategory(@RequestBody CategoryCreateRequest request) {
         return categoryService.createCategory(request);
+    }
+    @GetMapping
+    public ResponseEntity<?> findCategoryList() {
+        return categoryService.findCategoryList();
     }
 }

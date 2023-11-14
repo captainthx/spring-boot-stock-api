@@ -12,8 +12,8 @@ import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.List;
 
+@Entity(name = "ST_account")
 @Data
-@Entity(name = "account")
 @EqualsAndHashCode(callSuper = true)
 public class Account extends BaseEntity implements Serializable {
     private String username;

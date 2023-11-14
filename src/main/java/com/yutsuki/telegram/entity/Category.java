@@ -8,12 +8,12 @@ import java.io.Serializable;
 import java.util.List;
 
 @Data
-@Entity(name = "category")
-public class Category  implements Serializable {
+@Entity(name = "ST_category")
+public class Category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 50,nullable = false)
+    @Column(length = 50, nullable = false)
     private String categoryName;
 
     @JsonIgnore

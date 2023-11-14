@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-@Entity(name = "loginLogs")
+@Entity(name = "ST_loginLogs")
 @Data
 @EqualsAndHashCode(callSuper = true)
 public class LoginLogs extends BaseEntity implements Serializable {
@@ -27,7 +27,7 @@ public class LoginLogs extends BaseEntity implements Serializable {
     @ManyToOne
     @JoinColumn(name = "accountId", insertable = false, updatable = false)
     private Account account;
-    @Column(name = "accountId")
-    private Long uid;
+   @Column(name = "accountId")
+   private Long uid;
 
 }

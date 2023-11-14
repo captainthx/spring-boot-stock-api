@@ -17,4 +17,8 @@ public interface ProductRepository extends JpaRepository<Product, Long> {
     int countByStock(Stock stock);
     @Query(value = "select count(*) from product where stock_id is not null",nativeQuery = true)
     int countByStockIn(Set<Long> stockIds) ;
+    @Query(value = "select * from product where stock_id is not null",nativeQuery = true)
+    List<Product> findAllByStockId(Set<Long> stockIds);
+    List<Product> findAllByStockId(Long stockId);
+    int countByStockId(Long stockId);
 }

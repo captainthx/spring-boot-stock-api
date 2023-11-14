@@ -1,6 +1,10 @@
 package com.yutsuki.telegram.com;
 
-public enum ResponseMessage {
+import com.yutsuki.telegram.utils.StateMapping;
+import lombok.Getter;
+
+@Getter
+public enum ResponseMessage implements StateMapping<String> {
     INVALID_ACCOUNT("invalid account"),
     INVALID_USERNAME("invalid username"),
     INVALID_PASSWORD("invalid password"),
@@ -13,7 +17,8 @@ public enum ResponseMessage {
         this.message = message;
     }
 
-    public String getMessage() {
-        return message;
+    @Override
+    public String getMapping() {
+        return this.message;
     }
 }

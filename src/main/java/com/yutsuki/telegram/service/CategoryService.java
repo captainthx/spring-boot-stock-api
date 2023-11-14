@@ -27,4 +27,8 @@ public class CategoryService {
         return ResponseEntity.ok().body(res);
     }
 
+    public ResponseEntity<?> findCategoryList() {
+        return ResponseEntity.ok().body(MapperUtils.mapList(categoryRepository.findAll(), Category.class));
+    }
+
 }
