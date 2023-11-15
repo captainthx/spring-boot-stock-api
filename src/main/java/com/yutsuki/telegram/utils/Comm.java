@@ -1,6 +1,8 @@
 package com.yutsuki.telegram.utils;
 
 import org.springframework.http.HttpHeaders;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.oauth2.jwt.Jwt;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -37,5 +39,10 @@ public class Comm {
         }
 
         return deviceType;
+    }
+
+    public static Long getUid(Authentication authentication) {
+        Jwt credentials = (Jwt) authentication.getCredentials();
+        return (Long) credentials.getClaims().get("id");
     }
 }
