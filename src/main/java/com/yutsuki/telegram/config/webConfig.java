@@ -35,7 +35,7 @@ public class webConfig {
 
     String[] whiteList = new String[]{
             "/v1/auth/**",
-            "/telegram"
+            "/notifications"
     };
 
     @Bean

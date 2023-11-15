@@ -11,7 +11,19 @@ public enum OperateLogsType implements StateMapping<Integer> {
     /**
      * update product
      */
-    UPDATE_PRODUCT(10);
+    UPDATE_PRODUCT(10),
+    /**
+     * create stock
+     */
+    CREATE_STOCK(20),
+    /**
+     * create category
+     */
+    CREATE_CATEGORY(30),
+    /**
+     * create product
+     */
+    CREATE_PRODUCT(40);
 
 
     private final Integer mapping;
