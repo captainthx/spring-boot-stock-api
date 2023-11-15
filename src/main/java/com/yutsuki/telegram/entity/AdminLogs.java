@@ -16,8 +16,10 @@ public class AdminLogs extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private Long uid;
     @Column(nullable = false)
+    @Lob
     private String previous;
     @Column(nullable = false)
+    @Lob
     private String after;
     private Integer type;
     private LocalDateTime atTime;

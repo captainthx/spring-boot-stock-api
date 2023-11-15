@@ -3,13 +3,11 @@ package com.yutsuki.telegram.service;
 import com.yutsuki.telegram.com.OperateLogsType;
 import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.entity.*;
+import com.yutsuki.telegram.model.request.NotificationsRequest;
 import com.yutsuki.telegram.model.request.ProductCreateRequest;
 import com.yutsuki.telegram.model.request.UpdStockProductRequest;
 import com.yutsuki.telegram.model.response.ProductCreateResponse;
-import com.yutsuki.telegram.repository.AccountRepository;
-import com.yutsuki.telegram.repository.CategoryRepository;
-import com.yutsuki.telegram.repository.ProductRepository;
-import com.yutsuki.telegram.repository.StockRepository;
+import com.yutsuki.telegram.repository.*;
 import com.yutsuki.telegram.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
@@ -40,6 +38,10 @@ public class ProductService {
     private TelegramService telegramService;
     @Resource
     private AccountRepository accountRepository;
+    @Resource
+    private AdminLogsRepository adminLogsRepository;
+    @Resource
+    private NotificationService notificationService;
 
     public ResponseEntity<?> createProduct(ProductCreateRequest request) {
         if (request.getProductName().isEmpty()) {
@@ -106,31 +108,27 @@ public class ProductService {
         Product before = new Product();
         BeanUtils.copyProperties(product, before);
 
-        if (Objects.nonNull(request.getCategoryId())) {
-            product.setCategoryId(request.getCategoryId());
-        }
-        if (Objects.nonNull(request.getStockId())) {
-            product.setStockId(request.getStockId());
-        }
-        if (Objects.nonNull(request.getCost()) && request.getCost() > 0) {
-            product.setCost(request.getCost());
-        }
-        if (Objects.nonNull(request.getPrice()) && request.getPrice() > 0) {
-            product.setPrice(request.getPrice());
-        }
-        product.setStockQuantity(request.getStockQuantity());
+        Optional.ofNullable(request.getCategoryId()).ifPresent(product::setCategoryId);
+        Optional.ofNullable(request.getStockId()).ifPresent(product::setStockId);
+        Optional.ofNullable(request.getCost()).filter(cost -> cost > 0).ifPresent(product::setCost);
+        Optional.ofNullable(request.getPrice()).filter(price -> price > 0).ifPresent(product::setPrice);
+
+        product.setStockQuantity(product.getStockQuantity() + request.getStockQuantity());
         Product res = this.productRepository.save(product);
+
         AdminLogs logs = new AdminLogs();
         logs.setUid(uid);
         logs.setPrevious(JsonUtils.toJsonIfNotNull(before));
         logs.setAfter(JsonUtils.toJsonIfNotNull(res));
         logs.setAtTime(LocalDateTime.now());
         logs.setType(OperateLogsType.UPDATE_PRODUCT.getMapping());
+        this.adminLogsRepository.save(logs);
 
-        String msg = String.format("Update Product::(success). [name: %s] [req: %s]", account.getUsername(), request);
+
+        String msg = String.format("Update Product By name: %s productName: %s detail: %s", account.getUsername(), product.getProductName(),request);
         this.telegramService.sendMessage(msg);
-
-        return ResponseEntity.ok().build();
+        this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
+        return ResponseEntity.ok().body(res);
     }
 
 

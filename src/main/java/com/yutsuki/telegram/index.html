@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>spring boot sse demo</title>
+</head>
+<body>
+<h1>Server-sent Event (SSE) with spring boot</h1>
+<div id="events"></div>
+
+<script>
+    const eventsSource = new EventSource("http://localhost:8080/notifications");
+    eventsSource.onmessage = (event) => {
+        console.log("event",event.data.message);
+        const div = document.createElement("div");
+        div.textContent = `Event received: ${event.data}`;
+        document.getElementById("events").appendChild(div);
+
+    }
+    eventsSource.onerror =  (error) => {
+        console.log("error",error);
+        eventsSource.close()
+    }
+
+
+
+
+</script>
+
+</body>
+</html>
