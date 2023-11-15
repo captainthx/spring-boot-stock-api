@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @Entity(name = "St_adminLogs")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class AdminLogs extends BaseEntity implements Serializable {
+public class St_adminLogs extends BaseEntity implements Serializable {
     @Column(nullable = false)
     private Long uid;
     @Column(nullable = false)

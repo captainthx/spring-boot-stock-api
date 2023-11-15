@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 @Entity(name = "ST_product")
 @EqualsAndHashCode(callSuper = true)
-public class Product extends BaseEntity implements Serializable {
+public class St_Product extends BaseEntity implements Serializable {
     @Column(name = "categoryId")
     private Long categoryId;
     @Column(name = "stockId")
@@ -28,14 +28,14 @@ public class Product extends BaseEntity implements Serializable {
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
-    private Category category;
+    private St_category category;
 
 
 
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(name = "stockId", insertable = false, updatable = false)
-    private Stock stock;
+    private St_stock stock;
 
 
 }

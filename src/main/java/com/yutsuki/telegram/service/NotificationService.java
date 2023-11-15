@@ -1,6 +1,5 @@
 package com.yutsuki.telegram.service;
 
-import com.yutsuki.telegram.entity.Product;
 import com.yutsuki.telegram.model.request.NotificationsRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

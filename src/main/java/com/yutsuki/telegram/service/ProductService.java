@@ -3,18 +3,19 @@ package com.yutsuki.telegram.service;
 import com.yutsuki.telegram.com.OperateLogsType;
 import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.entity.*;
+import com.yutsuki.telegram.model.request.DeleteProductRequest;
 import com.yutsuki.telegram.model.request.NotificationsRequest;
 import com.yutsuki.telegram.model.request.ProductCreateRequest;
 import com.yutsuki.telegram.model.request.UpdStockProductRequest;
 import com.yutsuki.telegram.model.response.ProductCreateResponse;
 import com.yutsuki.telegram.repository.*;
+import com.yutsuki.telegram.utils.Comm;
 import com.yutsuki.telegram.utils.JsonUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -23,6 +24,7 @@ import java.time.LocalDateTime;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.yutsuki.telegram.com.HandleResponse.success;
 import static com.yutsuki.telegram.exception.HandleException.exception;
 
 @Service
@@ -43,7 +45,9 @@ public class ProductService {
     @Resource
     private NotificationService notificationService;
 
-    public ResponseEntity<?> createProduct(ProductCreateRequest request) {
+    public ResponseEntity<?> createProduct(ProductCreateRequest request, Authentication authentication) {
+        Long uid = Comm.getUid(authentication);
+        St_account account = this.accountRepository.findById(uid).get();
         if (request.getProductName().isEmpty()) {
             log.info("Create Product::(block). [invalid product name]. req: {}", request);
             return ResponseEntity.badRequest().body("invalid product name");
@@ -65,25 +69,27 @@ public class ProductService {
             return ResponseEntity.badRequest().body("invalid cost");
         }
 
-        Optional<Category> optionalCategory = this.categoryRepository.findById(request.getCategoryId());
+        Optional<St_category> optionalCategory = this.categoryRepository.findById(request.getCategoryId());
         if (!optionalCategory.isPresent()) {
             log.info("Create Product::(block). [category not found]. req: {}", request);
             return ResponseEntity.badRequest().body("category not found");
         }
-        Optional<Stock> optionalStock = this.stockRepository.findById(request.getStockId());
+        Optional<St_stock> optionalStock = this.stockRepository.findById(request.getStockId());
         if (!optionalStock.isPresent()) {
             log.info("Create Product::(block). [stock not found]. req: {}", request);
             return ResponseEntity.badRequest().body("stock not found");
         }
-
         // set to entity
-        Product entity = new Product();
+        St_Product entity = new St_Product();
         entity.setProductName(request.getProductName());
         entity.setCategoryId(request.getCategoryId());
         entity.setStockQuantity(request.getStockQuantity());
         entity.setPrice(request.getPrice());
         entity.setCost(request.getCost());
         entity.setStockId(request.getStockId());
+
+        String msg = String.format("Create Product By name: %s productName: %s detail: %s", account.getUsername(), entity.getProductName(), request);
+        this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
         return ResponseEntity.ok().body(this.createResponse(this.productRepository.save(entity)));
     }
 
@@ -95,17 +101,16 @@ public class ProductService {
 
     @Transactional(rollbackOn = Exception.class)
     public ResponseEntity<?> updateProduct(Authentication authentication, UpdStockProductRequest request) {
-        Jwt credentials = (Jwt) authentication.getCredentials();
-        Long uid = (Long) credentials.getClaims().get("id");
-        Account account = this.accountRepository.findById(uid).get();
-        Optional<Product> productOptional = this.productRepository.findById(request.getProductId());
+        Long uid = Comm.getUid(authentication);
+        St_account account = this.accountRepository.findById(uid).get();
+        Optional<St_Product> productOptional = this.productRepository.findById(request.getProductId());
         if (!productOptional.isPresent()) {
             log.warn("Update Stock Product::(block). [product not found]. req: {}", request);
             return exception("product not found");
         }
-        Product product = productOptional.get();
+        St_Product product = productOptional.get();
         // copy Properties
-        Product before = new Product();
+        St_Product before = new St_Product();
         BeanUtils.copyProperties(product, before);
 
         Optional.ofNullable(request.getCategoryId()).ifPresent(product::setCategoryId);
@@ -114,9 +119,9 @@ public class ProductService {
         Optional.ofNullable(request.getPrice()).filter(price -> price > 0).ifPresent(product::setPrice);
 
         product.setStockQuantity(product.getStockQuantity() + request.getStockQuantity());
-        Product res = this.productRepository.save(product);
+        St_Product res = this.productRepository.save(product);
 
-        AdminLogs logs = new AdminLogs();
+        St_adminLogs logs = new St_adminLogs();
         logs.setUid(uid);
         logs.setPrevious(JsonUtils.toJsonIfNotNull(before));
         logs.setAfter(JsonUtils.toJsonIfNotNull(res));
@@ -125,14 +130,28 @@ public class ProductService {
         this.adminLogsRepository.save(logs);
 
 
-        String msg = String.format("Update Product By name: %s productName: %s detail: %s", account.getUsername(), product.getProductName(),request);
+        String msg = String.format("Update Product By name: %s productName: %s detail: %s", account.getUsername(), product.getProductName(), request);
         this.telegramService.sendMessage(msg);
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
         return ResponseEntity.ok().body(res);
     }
 
+    public ResponseEntity<?> deleteProduct(DeleteProductRequest request, Authentication authentication) {
+        Long uid = Comm.getUid(authentication);
+        St_account account = this.accountRepository.findById(uid).get();
+        Optional<St_Product> productOptional = this.productRepository.findById(request.getProductId());
+        if (!productOptional.isPresent()) {
+            log.warn("Delete Product::(block). [product not found]. productId: {}", request.getProductId());
+            return exception("product not found");
+        }
+        St_Product product = productOptional.get();
+        this.productRepository.deleteById(request.getProductId());
+        String msg = String.format("Delete Product By name: %s productName: %s ", account.getUsername(), product.getProductName());
+        this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
+        return success();
+    }
 
-    private ProductCreateResponse createResponse(Product product) {
+    private ProductCreateResponse createResponse(St_Product product) {
         return ProductCreateResponse.builder()
                 .id(product.getId())
                 .categoryId(product.getCategoryId())

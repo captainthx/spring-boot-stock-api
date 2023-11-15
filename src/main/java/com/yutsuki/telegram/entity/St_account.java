@@ -3,11 +3,9 @@ package com.yutsuki.telegram.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
 import javax.persistence.OneToMany;
 import java.io.Serializable;
 import java.util.List;
@@ -15,11 +13,11 @@ import java.util.List;
 @Entity(name = "ST_account")
 @Data
 @EqualsAndHashCode(callSuper = true)
-public class Account extends BaseEntity implements Serializable {
+public class St_account extends BaseEntity implements Serializable {
     private String username;
     private String password;
 
     @OneToMany(mappedBy = "account",fetch = FetchType.LAZY,orphanRemoval = true)
-    private List<LoginLogs> loginLogs;
+    private List<St_loginLogs> loginLogs;
 
 }

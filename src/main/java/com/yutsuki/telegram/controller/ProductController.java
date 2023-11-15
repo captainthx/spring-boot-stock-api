@@ -1,6 +1,7 @@
 package com.yutsuki.telegram.controller;
 
 import com.yutsuki.telegram.com.Pagination;
+import com.yutsuki.telegram.model.request.DeleteProductRequest;
 import com.yutsuki.telegram.model.request.ProductCreateRequest;
 import com.yutsuki.telegram.model.request.UpdStockProductRequest;
 import com.yutsuki.telegram.service.ProductService;
@@ -19,8 +20,8 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request) {
-        return this.productService.createProduct(request);
+    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request, Authentication authentication) {
+        return this.productService.createProduct(request, authentication);
     }
 
     @GetMapping
@@ -31,5 +32,10 @@ public class ProductController {
     @PatchMapping
     public ResponseEntity<?> updateProduct(@RequestBody UpdStockProductRequest request, Authentication authentication) {
         return this.productService.updateProduct(authentication, request);
+    }
+
+    @DeleteMapping
+    public ResponseEntity<?> deleteProduct(DeleteProductRequest request, Authentication authentication) {
+        return this.productService.deleteProduct(request, authentication);
     }
 }

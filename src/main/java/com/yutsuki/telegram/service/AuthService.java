@@ -1,10 +1,8 @@
 package com.yutsuki.telegram.service;
 
 import com.yutsuki.telegram.com.ResponseMessage;
-import com.yutsuki.telegram.entity.Account;
-import com.yutsuki.telegram.entity.LoginLogs;
-import com.yutsuki.telegram.exception.ErrorHandlingControllerAdvice;
-import com.yutsuki.telegram.exception.HandleException.*;
+import com.yutsuki.telegram.entity.St_account;
+import com.yutsuki.telegram.entity.St_loginLogs;
 import com.yutsuki.telegram.model.request.LoginRequest;
 import com.yutsuki.telegram.model.request.RegisterAccountRequest;
 import com.yutsuki.telegram.model.response.RegisterAccountResponse;
@@ -17,14 +15,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
-import javax.xml.ws.Response;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 
 import static com.yutsuki.telegram.exception.HandleException.exception;
@@ -52,10 +45,10 @@ public class AuthService {
             return exception(ResponseMessage.INVALID_PASSWORD.getMessage());
         }
 
-        Account entity = new Account();
+        St_account entity = new St_account();
         entity.setUsername(request.getUsername());
         entity.setPassword(this.passwordEncoder.encode(request.getPassword()));
-        Account response = this.accountRepository.save(entity);
+        St_account response = this.accountRepository.save(entity);
         RegisterAccountResponse registerAccountResponse = MapperUtils.mapOne(response, RegisterAccountResponse.class);
         return ResponseEntity.ok(registerAccountResponse);
     }
@@ -65,18 +58,18 @@ public class AuthService {
         String userAgent = Comm.getUserAgent(httpServletRequest);
         String deviceType = Comm.getDeviceType(userAgent);
 
-        Optional<Account> optionalAccount = this.accountRepository.findByUsername(request.getUsername());
+        Optional<St_account> optionalAccount = this.accountRepository.findByUsername(request.getUsername());
         if (!optionalAccount.isPresent()) {
             log.warn("Login::(block). [account not found]. req{}", request);
             return exception(ResponseMessage.INVALID_USERNAME.getMessage());
         }
-        Account account = optionalAccount.get();
+        St_account account = optionalAccount.get();
         if (!this.passwordEncoder.matches(request.getPassword(), account.getPassword())) {
             log.warn("Login::(block). [password not match]. req{}", request);
             return exception(ResponseMessage.PASSWORD_NOT_MATCH.getMessage());
         }
         // set login logs
-        LoginLogs loginLogs = new LoginLogs();
+        St_loginLogs loginLogs = new St_loginLogs();
         loginLogs.setUid(account.getId());
         loginLogs.setDevice(deviceType);
         loginLogs.setIpv4(ipv4);

@@ -7,17 +7,16 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
+@Entity(name = "ST_stock")
 @Data
-@Entity(name = "ST_category")
-public class Category implements Serializable {
+public class St_stock implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Column(length = 50, nullable = false)
-    private String categoryName;
+    private String stockName;
 
+    @OneToMany(mappedBy = "stock",fetch = FetchType.LAZY,orphanRemoval = true)
     @JsonIgnore
-    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY,orphanRemoval = true)
-    private List<Product> product;
+    private List<St_Product> products;
 
 }

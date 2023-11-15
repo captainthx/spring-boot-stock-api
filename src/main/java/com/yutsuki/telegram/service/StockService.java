@@ -1,25 +1,29 @@
 package com.yutsuki.telegram.service;
 
 import com.yutsuki.telegram.com.Pagination;
-import com.yutsuki.telegram.entity.Product;
-import com.yutsuki.telegram.entity.Stock;
+import com.yutsuki.telegram.entity.St_account;
+import com.yutsuki.telegram.entity.St_stock;
 import com.yutsuki.telegram.model.StockDetail;
 import com.yutsuki.telegram.model.request.CreateStockRequest;
+import com.yutsuki.telegram.model.request.DeleteStockRequest;
+import com.yutsuki.telegram.model.request.NotificationsRequest;
 import com.yutsuki.telegram.model.response.StockListResponse;
+import com.yutsuki.telegram.repository.AccountRepository;
 import com.yutsuki.telegram.repository.ProductRepository;
 import com.yutsuki.telegram.repository.StockRepository;
+import com.yutsuki.telegram.utils.Comm;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import java.util.*;
 import java.util.function.Function;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import static com.yutsuki.telegram.com.HandleResponse.success;
 import static com.yutsuki.telegram.exception.HandleException.exception;
 
 @Service
@@ -28,30 +32,37 @@ public class StockService {
 
     @Resource
     private StockRepository stockRepository;
-
     @Resource
     private ProductRepository productRepository;
+    @Resource
+    private NotificationService notificationService;
+    @Resource
+    private AccountRepository accountRepository;
 
 
-    public ResponseEntity<?> createStock(CreateStockRequest request) {
+    public ResponseEntity<?> createStock(CreateStockRequest request, Authentication authentication) {
+        Long uid = Comm.getUid(authentication);
+        St_account account = this.accountRepository.findById(uid).get();
         if (!StringUtils.hasText(request.getStockName())) {
             log.warn("Stock::(block). Stock name is empty req. {}", request);
             return exception("Stock name is empty");
         }
-        Stock entity = new Stock();
+        St_stock entity = new St_stock();
         entity.setStockName(request.getStockName());
-        Stock res = this.stockRepository.save(entity);
+        St_stock res = this.stockRepository.save(entity);
+        String msg = String.format("Stock created By name:%s StockName: %s ", account.getUsername(), res.getStockName());
+        this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
         return ResponseEntity.ok().body(res);
     }
 
     public ResponseEntity<?> findStockList(Pagination pagination) {
-        List<Stock> stockListAll = this.stockRepository.findAll().stream().map(e -> {
-            Stock stock = new Stock();
+        List<St_stock> stockListAll = this.stockRepository.findAll().stream().map(e -> {
+            St_stock stock = new St_stock();
             stock.setId(e.getId());
             stock.setStockName(e.getStockName());
             return stock;
         }).collect(Collectors.toList());
-        Map<Long, Stock> stockMap = stockListAll.stream().collect(Collectors.toMap(Stock::getId, Function.identity()));
+        Map<Long, St_stock> stockMap = stockListAll.stream().collect(Collectors.toMap(St_stock::getId, Function.identity()));
 
         List<StockListResponse> responseList = this.productRepository.findAll(pagination).stream()
                 .collect(Collectors.groupingBy(
@@ -78,5 +89,19 @@ public class StockService {
         return ResponseEntity.ok().body(responseList);
     }
 
+    public ResponseEntity<?> deleteStock(DeleteStockRequest request, Authentication authentication) {
+        Long uid = Comm.getUid(authentication);
+        St_account account = this.accountRepository.findById(uid).get();
+        Optional<St_stock> stockOptional = this.stockRepository.findById(request.getStockId());
+        if (!stockOptional.isPresent()) {
+            log.warn("Stock::(block). Invalid StockId. stockId: {}", request.getStockId());
+            return exception("Stock not found");
+        }
+        St_stock stock = stockOptional.get();
+        this.stockRepository.deleteById(request.getStockId());
+        String msg = String.format("Stock deleted By name:%s StockName: %s ", account.getUsername(), stock.getStockName());
+        this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
+        return success();
+    }
 
 }

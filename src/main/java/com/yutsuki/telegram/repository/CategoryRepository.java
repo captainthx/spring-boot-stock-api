@@ -1,10 +1,8 @@
 package com.yutsuki.telegram.repository;
 
-import com.yutsuki.telegram.entity.Category;
+import com.yutsuki.telegram.entity.St_category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import java.util.Optional;
-
-public interface CategoryRepository extends JpaRepository<Category, Long> {
+public interface CategoryRepository extends JpaRepository<St_category, Long> {
 
 }

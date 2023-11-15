@@ -2,23 +2,22 @@ package com.yutsuki.telegram.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.ToString;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.List;
 
-@Entity(name = "ST_stock")
 @Data
-public class Stock implements Serializable {
+@Entity(name = "ST_category")
+public class St_category implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    private String stockName;
+    @Column(length = 50, nullable = false)
+    private String categoryName;
 
-    @OneToMany(mappedBy = "stock",fetch = FetchType.LAZY,orphanRemoval = true)
     @JsonIgnore
-    private List<Product> products;
+    @OneToMany(mappedBy = "category",fetch = FetchType.LAZY,orphanRemoval = true)
+    private List<St_Product> product;
 
 }
