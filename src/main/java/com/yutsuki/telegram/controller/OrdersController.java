@@ -1,9 +1,12 @@
 package com.yutsuki.telegram.controller;
 
+import com.yutsuki.telegram.com.Pagination;
+import com.yutsuki.telegram.model.request.CreateOrdersRequest;
 import com.yutsuki.telegram.service.OrdersService;
+import lombok.Getter;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 
@@ -13,7 +16,12 @@ public class OrdersController {
     @Resource
     private OrdersService ordersService;
 
-    public ResponseEntity<?> createOrders() {
-        return ordersService.createOrders();
+    @PostMapping
+    public ResponseEntity<?> createOrders(@RequestBody CreateOrdersRequest request, Authentication authentication) {
+        return ordersService.createOrders(request,authentication);
+    }
+    @GetMapping
+    public ResponseEntity<?> findOrdersAll(Pagination pagination) {
+        return this.ordersService.findAllOrders(pagination);
     }
 }

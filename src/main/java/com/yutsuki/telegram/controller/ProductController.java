@@ -2,7 +2,7 @@ package com.yutsuki.telegram.controller;
 
 import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.model.request.DeleteProductRequest;
-import com.yutsuki.telegram.model.request.ProductCreateRequest;
+import com.yutsuki.telegram.model.request.CreateProductRequest;
 import com.yutsuki.telegram.model.request.UpdStockProductRequest;
 import com.yutsuki.telegram.service.ProductService;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +20,7 @@ public class ProductController {
 
 
     @PostMapping
-    public ResponseEntity<?> createProduct(@Valid @RequestBody ProductCreateRequest request, Authentication authentication) {
+    public ResponseEntity<?> createProduct(@Valid @RequestBody CreateProductRequest request, Authentication authentication) {
         return this.productService.createProduct(request, authentication);
     }
 

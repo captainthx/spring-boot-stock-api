@@ -22,5 +22,6 @@ public class St_adminLogs extends BaseEntity implements Serializable {
     @Lob
     private String after;
     private Integer type;
+    @Column(nullable = false)
     private LocalDateTime atTime;
 }

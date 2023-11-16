@@ -52,7 +52,7 @@ public class StockService {
         St_stock res = this.stockRepository.save(entity);
         String msg = String.format("Stock created By name:%s StockName: %s ", account.getUsername(), res.getStockName());
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
-        return ResponseEntity.ok().body(res);
+        return ResponseEntity.ok(res);
     }
 
     public ResponseEntity<?> findStockList(Pagination pagination) {
@@ -86,7 +86,7 @@ public class StockService {
                 })
                 .collect(Collectors.toList());
 
-        return ResponseEntity.ok().body(responseList);
+        return ResponseEntity.ok(responseList);
     }
 
     public ResponseEntity<?> deleteStock(DeleteStockRequest request, Authentication authentication) {

@@ -42,11 +42,11 @@ public class CategoryService {
         St_category res = categoryRepository.save(entity);
         String msg = String.format("Category created By name:%s CategoryName: %s ", account.getUsername(), res.getCategoryName());
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
-        return ResponseEntity.ok().body(res);
+        return ResponseEntity.ok(res);
     }
 
     public ResponseEntity<?> findCategoryList() {
-        return ResponseEntity.ok().body(MapperUtils.mapList(categoryRepository.findAll(), St_category.class));
+        return ResponseEntity.ok(MapperUtils.mapList(categoryRepository.findAll(), St_category.class));
     }
 
     public ResponseEntity<?> deleteCategory(DeleteCategoryRequest request, Authentication authentication) {

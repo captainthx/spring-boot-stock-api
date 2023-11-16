@@ -5,9 +5,9 @@ import com.yutsuki.telegram.com.Pagination;
 import com.yutsuki.telegram.entity.*;
 import com.yutsuki.telegram.model.request.DeleteProductRequest;
 import com.yutsuki.telegram.model.request.NotificationsRequest;
-import com.yutsuki.telegram.model.request.ProductCreateRequest;
+import com.yutsuki.telegram.model.request.CreateProductRequest;
 import com.yutsuki.telegram.model.request.UpdStockProductRequest;
-import com.yutsuki.telegram.model.response.ProductCreateResponse;
+import com.yutsuki.telegram.model.response.CreateProductResponse;
 import com.yutsuki.telegram.repository.*;
 import com.yutsuki.telegram.utils.Comm;
 import com.yutsuki.telegram.utils.JsonUtils;
@@ -25,6 +25,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.yutsuki.telegram.com.HandleResponse.success;
+import static com.yutsuki.telegram.com.HandleResponse.successList;
 import static com.yutsuki.telegram.exception.HandleException.exception;
 
 @Service
@@ -45,7 +46,7 @@ public class ProductService {
     @Resource
     private NotificationService notificationService;
 
-    public ResponseEntity<?> createProduct(ProductCreateRequest request, Authentication authentication) {
+    public ResponseEntity<?> createProduct(CreateProductRequest request, Authentication authentication) {
         Long uid = Comm.getUid(authentication);
         St_account account = this.accountRepository.findById(uid).get();
         if (request.getProductName().isEmpty()) {
@@ -90,13 +91,13 @@ public class ProductService {
 
         String msg = String.format("Create Product By name: %s productName: %s detail: %s", account.getUsername(), entity.getProductName(), request);
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
-        return ResponseEntity.ok().body(this.createResponse(this.productRepository.save(entity)));
+        return ResponseEntity.ok(this.createResponse(this.productRepository.save(entity)));
     }
 
 
     public ResponseEntity<?> findAllProduct(Pagination pagination) {
-        Page<ProductCreateResponse> productList = this.productRepository.findAll(pagination).map(this::createResponse);
-        return ResponseEntity.ok(productList);
+        Page<St_Product> productList = this.productRepository.findAll(pagination);
+        return successList(productList);
     }
 
     @Transactional(rollbackOn = Exception.class)
@@ -133,7 +134,7 @@ public class ProductService {
         String msg = String.format("Update Product By name: %s productName: %s detail: %s", account.getUsername(), product.getProductName(), request);
         this.telegramService.sendMessage(msg);
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
-        return ResponseEntity.ok().body(res);
+        return ResponseEntity.ok(res);
     }
 
     public ResponseEntity<?> deleteProduct(DeleteProductRequest request, Authentication authentication) {
@@ -151,8 +152,8 @@ public class ProductService {
         return success();
     }
 
-    private ProductCreateResponse createResponse(St_Product product) {
-        return ProductCreateResponse.builder()
+    private CreateProductResponse createResponse(St_Product product) {
+        return CreateProductResponse.builder()
                 .id(product.getId())
                 .categoryId(product.getCategoryId())
                 .productName(product.getProductName())

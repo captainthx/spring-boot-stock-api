@@ -1,12 +1,11 @@
 package com.yutsuki.telegram.model.request;
 
-import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
-public class ProductCreateRequest {
+public class CreateProductRequest {
     private String productName;
     private Float price;
     private Float cost;

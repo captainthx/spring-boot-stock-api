@@ -9,24 +9,93 @@
 </head>
 <body>
 <h1>Server-sent Event (SSE) with spring boot</h1>
+<div>
+    <label>productID</label>
+    <input id="productId"> <br/>
+    <label>amount</label>
+    <input id="amount"><br/>
+    <button type="submit">send</button>
+</div>
+<div id="content">
+    <h3>new orders</h3>
+</div>
+<div id="orders">
+</div>
+
 <div id="events"></div>
 
 <script>
+    const productId = document.getElementById("productId");
+    const amount = document.getElementById("amount");
+    const button = document.querySelector("button");
+    const content = document.getElementById("content");
+    const orders = document.getElementById("orders");
+
+    const ordersList = []
+
     const eventsSource = new EventSource("http://localhost:8080/notifications");
     eventsSource.onmessage = (event) => {
-        console.log("event",event.data.message);
+        console.log("event", event.data.message);
         const div = document.createElement("div");
         div.textContent = `Event received: ${event.data}`;
         document.getElementById("events").appendChild(div);
 
     }
-    eventsSource.onerror =  (error) => {
-        console.log("error",error);
+    eventsSource.onerror = (error) => {
+        console.log("error", error);
         eventsSource.close()
     }
+    button.addEventListener("click", () => {
+        console.log("productId", productId.value);
+        console.log("amount", amount.value);
+        fetch("http://localhost:8080/v1/orders", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5dXRzdWtpIiwiaWQiOjEsImV4cCI6MTcwMDE5MzI4NSwiaWF0IjoxNzAwMTA2ODg1LCJqdGkiOiIzZTY0YTM2OS1hYjI1LTRlZGEtOWQwNi04Y2MyNmQ1MTE2ZTcifQ.sxzveTF7Dz3kezzDbRkW5ix9HX8k6gHIimeyxD1CQbVUWi71hjuvf4qkZV0Kr-VjZnADnP8w-QdpgzoLbp7zMs9sOjbm8z95QSwBu8b5pzkCOB0diWVzUg75BlY3REEdbfB3aLlm3sIlXUxlWRjsKF2XgT851WjDAw4VeDNjpI_8BDgL-qGnx-8ac3xnA0Ndna2WeE3ydFWExtWzzMZifOXuXXHAjCtUfWUWiLq1SZ6xs5dDjqycjfki2HIiE6YFgpN5WwiOe9jAZ365msV0RucYzuoPyJhFi2BK1H6mRCFbg7tlom8V6LneVJR9sVri-wPvmNA_E5yxGd5Y2vOByQ"
+            },
+            body: JSON.stringify({
+                productId: productId.value,
+                amount: amount.value
+            })
+        }).then((res) => res.json())
+            .then((data) => {
+                content.innerHTML =
+                    `
+                <p>prodcut name ${data.productName}</p>
+                <p>totalPrice ${data.totalPrice}</p>
+                <p>costPerProduct ${data.costPerProduct}</p>
+                <p>pricePerProduct ${data.pricePerProduct}</p>
+                <p>totalQuantity ${data.totalQuantity}</p>
+`
+            })
+    })
 
+    async function getOrdersList() {
+        await fetch("http://localhost:8080/v1/orders", {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJ5dXRzdWtpIiwiaWQiOjEsImV4cCI6MTcwMDE5MzI4NSwiaWF0IjoxNzAwMTA2ODg1LCJqdGkiOiIzZTY0YTM2OS1hYjI1LTRlZGEtOWQwNi04Y2MyNmQ1MTE2ZTcifQ.sxzveTF7Dz3kezzDbRkW5ix9HX8k6gHIimeyxD1CQbVUWi71hjuvf4qkZV0Kr-VjZnADnP8w-QdpgzoLbp7zMs9sOjbm8z95QSwBu8b5pzkCOB0diWVzUg75BlY3REEdbfB3aLlm3sIlXUxlWRjsKF2XgT851WjDAw4VeDNjpI_8BDgL-qGnx-8ac3xnA0Ndna2WeE3ydFWExtWzzMZifOXuXXHAjCtUfWUWiLq1SZ6xs5dDjqycjfki2HIiE6YFgpN5WwiOe9jAZ365msV0RucYzuoPyJhFi2BK1H6mRCFbg7tlom8V6LneVJR9sVri-wPvmNA_E5yxGd5Y2vOByQ"
+            },
+        }).then((res) => res.json())
+            .then((data) => {
+                 data.result.forEach((order) => {
+                     orders.innerHTML +=
+                  `
+                    <p>prodcut id ${order.id}</p>
+                    <p>totalPrice ${order.totalPrice}</p>
+                    <p>costPerProduct ${order.costPerProduct}</p>
+                    <p>pricePerProduct ${order.pricePerProduct}</p>
+                    <p>totalQuantity ${order.totalQuantity}</p>
+                    `
+                })
+            })
+    }
 
-
+    document.addEventListener("DOMContentLoaded", async () => {
+      await  getOrdersList()
+    })
 
 </script>
 

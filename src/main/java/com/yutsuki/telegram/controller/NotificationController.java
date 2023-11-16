@@ -17,7 +17,7 @@ public class NotificationController {
     @Resource
     private NotificationService notificationService;
 
-    @CrossOrigin
+
     @GetMapping(path = "/notifications", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe() {
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);

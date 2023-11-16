@@ -1,6 +1,6 @@
 package com.yutsuki.telegram.service;
 
-import com.yutsuki.telegram.entity.Account;
+import com.yutsuki.telegram.entity.St_account;
 import com.yutsuki.telegram.model.Token;
 import com.yutsuki.telegram.model.response.TokenResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
-import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -32,7 +31,7 @@ public class TokenService {
     private String issuer;
 
 
-    public TokenResponse generateToken(Account account) {
+    public TokenResponse generateToken(St_account account) {
         Token access = this.generateAccessToken(account.getId());
         Token refresh = this.generateRefreshToken(account.getId());
         this.setTokenId(access.getToken(), refresh.getToken(), account.getId());
