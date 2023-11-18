@@ -3,6 +3,7 @@ package com.yutsuki.telegram.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -22,9 +23,10 @@ public class St_loginLogs extends BaseEntity implements Serializable {
     @Column(nullable = false, length = 7)
     private String device;
     @ManyToOne
+    @JsonIgnore
     @JoinColumn(name = "accountId", insertable = false, updatable = false)
     private St_account account;
-   @Column(name = "accountId")
-   private Long uid;
+    @Column(name = "accountId")
+    private Long uid;
 
 }

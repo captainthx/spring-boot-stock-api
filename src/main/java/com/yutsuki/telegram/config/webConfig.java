@@ -39,7 +39,8 @@ public class webConfig {
 
     String[] whiteList = new String[]{
             "/v1/auth/**",
-            "/notifications"
+            "/notifications/**",
+            "/v1/image/**"
     };
 
     @Bean

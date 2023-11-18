@@ -25,6 +25,7 @@ public class St_Product extends BaseEntity implements Serializable {
     private Float cost;
     @Column(nullable = false)
     private Float price;
+    private String productImage;
     @ManyToOne
     @ToString.Exclude
     @JoinColumn(name = "categoryId", insertable = false, updatable = false)
