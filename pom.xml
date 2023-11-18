@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.yutsuki</groupId>
-    <artifactId>spring-boot-telegram</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>spring-boot-telegram</name>
-    <description>spring-boot-telegram</description>
+    <artifactId>stockApi</artifactId>
+    <version>0.0.1</version>
+    <name>stockApi</name>
+    <description>stockApi</description>
     <properties>
         <java.version>1.8</java.version>
     </properties>
