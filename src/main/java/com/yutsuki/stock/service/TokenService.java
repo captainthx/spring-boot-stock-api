@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.Resource;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.Objects;
 import java.util.UUID;
 
 @Service
@@ -48,7 +49,7 @@ public class TokenService {
     }
 
     public Token generateRefreshToken(Long uid) {
-        return generate(this.setRefreshExpire(expire),uid);
+        return generate(this.setRefreshExpire(expire), uid);
     }
 
     private Token generate(Instant expire, Long uid) {
@@ -73,7 +74,17 @@ public class TokenService {
 
     public String jwtDecode(String token) {
         Jwt decode = jwtDecoder.decode(token);
-        return decode.getClaims().get("name").toString();
+        return decode.getClaims().get("id").toString();
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            jwtDecoder.decode(token);
+            return true;
+        } catch (Exception e) {
+            log.error("TokenService::(validate). [invalid token]. token: {}, error: {}", token, e.getMessage());
+            return false;
+        }
     }
 
     public String getTokenId(String token) {
@@ -81,6 +92,19 @@ public class TokenService {
         return decode.getId();
     }
 
+    public String getUid(String token) {
+        Jwt decode = jwtDecoder.decode(token);
+        return decode.getClaims().get("id").toString();
+    }
+
+    public boolean isExpire(String token) {
+        Jwt decode = jwtDecoder.decode(token);
+        if (Objects.requireNonNull(decode.getExpiresAt()).isBefore(Instant.now())) {
+            log.warn("TokenService::(isExpire). [refresh token is expire]. token: {}", token);
+            return true;
+        }
+        return false;
+    }
 
     private Instant setRefreshExpire(String expirationMs) {
         return Instant.now().plusMillis(DurationStyle.detectAndParse(expirationMs).toMillis()).plus(30, ChronoUnit.MINUTES);

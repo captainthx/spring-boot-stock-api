@@ -1,6 +1,7 @@
 package com.yutsuki.stock.controller;
 
 import com.yutsuki.stock.model.request.LoginRequest;
+import com.yutsuki.stock.model.request.RefreshTokenRequest;
 import com.yutsuki.stock.model.request.RegisterAccountRequest;
 import com.yutsuki.stock.service.AuthService;
 import org.springframework.http.ResponseEntity;
@@ -23,8 +24,12 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request , HttpServletRequest httpServletRequest) {
-        return this.authService.login(request,httpServletRequest);
+    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest request, HttpServletRequest httpServletRequest) {
+        return this.authService.login(request, httpServletRequest);
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<?> refreshToken(@Valid @RequestBody RefreshTokenRequest request) {
+        return this.authService.refreshToken(request);
+    }
 }

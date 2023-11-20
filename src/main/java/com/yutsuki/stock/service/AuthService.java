@@ -4,6 +4,7 @@ import com.yutsuki.stock.com.ResponseMessage;
 import com.yutsuki.stock.entity.St_account;
 import com.yutsuki.stock.entity.St_loginLogs;
 import com.yutsuki.stock.model.request.LoginRequest;
+import com.yutsuki.stock.model.request.RefreshTokenRequest;
 import com.yutsuki.stock.model.request.RegisterAccountRequest;
 import com.yutsuki.stock.model.response.RegisterAccountResponse;
 import com.yutsuki.stock.repository.AccountRepository;
@@ -13,11 +14,14 @@ import com.yutsuki.stock.utils.MapperUtils;
 import com.yutsuki.stock.utils.ValidateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.yutsuki.stock.exception.HandleException.exception;
@@ -76,6 +80,25 @@ public class AuthService {
         loginLogs.setUserAgent(userAgent);
         this.loginLogsRepository.save(loginLogs);
 
+        return ResponseEntity.ok(this.tokenService.generateToken(account));
+    }
+
+    public ResponseEntity<?> refreshToken(RefreshTokenRequest request) {
+        if (Objects.isNull(request.getRefreshToken())) {
+            log.warn("RefreshToken::(block). [refreshToken is null]. req{}", request);
+            return exception(ResponseMessage.INVALID_REFRESH_TOKEN.getMessage());
+        }
+//        if (this.tokenService.isExpire(request.getRefreshToken())){
+//            log.warn("RefreshToken::(block). [refreshToken is expire]. req{}", request);
+//            return exception(ResponseMessage.REFRESH_TOKEN_EXPIRE.getMessage());
+//        }
+        String uid = this.tokenService.getUid(request.getRefreshToken());
+        Optional<St_account> optionalAccount = this.accountRepository.findById(Long.valueOf(uid));
+        if (!optionalAccount.isPresent()) {
+            log.warn("RefreshToken::(block). [account not found]. req{}", request);
+            return exception(ResponseMessage.INVALID_UID.getMessage());
+        }
+        St_account account = optionalAccount.get();
         return ResponseEntity.ok(this.tokenService.generateToken(account));
     }
 
