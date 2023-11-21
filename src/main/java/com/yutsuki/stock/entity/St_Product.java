@@ -16,8 +16,6 @@ import java.io.Serializable;
 public class St_Product extends BaseEntity implements Serializable {
     @Column(name = "categoryId")
     private Long categoryId;
-    @Column(name = "stockId")
-    private Long stockId;
     private int stockQuantity;
     @Column(length = 100, nullable = false)
     private String productName;
@@ -32,11 +30,6 @@ public class St_Product extends BaseEntity implements Serializable {
     private St_category category;
 
 
-
-    @ManyToOne
-    @ToString.Exclude
-    @JoinColumn(name = "stockId", insertable = false, updatable = false)
-    private St_stock stock;
 
 
 }

@@ -35,8 +35,7 @@ public class ProductService {
     private ProductRepository productRepository;
     @Resource
     private CategoryRepository categoryRepository;
-    @Resource
-    private StockRepository stockRepository;
+
     @Resource
     private TelegramService telegramService;
     @Resource
@@ -75,11 +74,7 @@ public class ProductService {
             log.info("Create Product::(block). [category not found]. req: {}", request);
             return ResponseEntity.badRequest().body("category not found");
         }
-        Optional<St_stock> optionalStock = this.stockRepository.findById(request.getStockId());
-        if (!optionalStock.isPresent()) {
-            log.info("Create Product::(block). [stock not found]. req: {}", request);
-            return ResponseEntity.badRequest().body("stock not found");
-        }
+
         // set to entity
         St_Product entity = new St_Product();
         entity.setProductName(request.getProductName());
@@ -87,7 +82,6 @@ public class ProductService {
         entity.setStockQuantity(request.getStockQuantity());
         entity.setPrice(request.getPrice());
         entity.setCost(request.getCost());
-        entity.setStockId(request.getStockId());
 
         String msg = String.format("Create Product By name: %s productName: %s detail: %s", account.getUsername(), entity.getProductName(), request);
         this.notificationService.sendNotification(NotificationsRequest.builder().notifications(msg).build());
@@ -96,7 +90,12 @@ public class ProductService {
 
 
     public ResponseEntity<?> findAllProduct(Pagination pagination) {
-        Page<St_Product> productList = this.productRepository.findAll(pagination);
+        Page<St_Product> productList;
+        if (pagination.getCategoryId() != null) {
+            productList = this.productRepository.findByCategoryId(pagination.getCategoryId(), pagination);
+        } else {
+            productList = this.productRepository.findAll(pagination);
+        }
         return successList(productList);
     }
 
@@ -115,7 +114,6 @@ public class ProductService {
         BeanUtils.copyProperties(product, before);
 
         Optional.ofNullable(request.getCategoryId()).ifPresent(product::setCategoryId);
-        Optional.ofNullable(request.getStockId()).ifPresent(product::setStockId);
         Optional.ofNullable(request.getCost()).filter(cost -> cost > 0).ifPresent(product::setCost);
         Optional.ofNullable(request.getPrice()).filter(price -> price > 0).ifPresent(product::setPrice);
 
