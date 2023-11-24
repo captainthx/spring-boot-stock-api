@@ -1,6 +1,7 @@
 package com.yutsuki.stock.service;
 
 import com.yutsuki.stock.com.OperateLogsType;
+import com.yutsuki.stock.com.OrdersStatusType;
 import com.yutsuki.stock.com.Pagination;
 import com.yutsuki.stock.entity.St_Product;
 import com.yutsuki.stock.entity.St_account;
@@ -25,6 +26,7 @@ import javax.annotation.Resource;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.UUID;
 
 import static com.yutsuki.stock.com.HandleResponse.successList;
 import static com.yutsuki.stock.exception.HandleException.exception;
@@ -69,11 +71,11 @@ public class OrdersService {
 
         // create order
         St_orders entity = new St_orders();
+        entity.setOrdersId(UUID.randomUUID().toString());
         entity.setProductId(request.getProductId());
-        entity.setTotalPrice(request.getAmount() * product.getPrice());
-        entity.setTotalQuantity(request.getAmount());
-        entity.setCostPerProduct(product.getCost());
-        entity.setPricePerProduct(product.getPrice());
+        entity.setAmount(request.getAmount());
+        entity.setUid(uid);
+        entity.setStatus(OrdersStatusType.PENDING.getMapping());
         St_orders orderRes = this.ordersRepository.save(entity);
 
         // create log
@@ -99,12 +101,11 @@ public class OrdersService {
 
     private CreateOrdersResponse createOrdersResponse(St_orders orders, St_Product product) {
         return CreateOrdersResponse.builder()
+                .ordersId(orders.getOrdersId())
                 .productId(orders.getProductId())
                 .productName(product.getProductName())
-                .totalPrice(orders.getTotalPrice())
-                .costPerProduct(orders.getCostPerProduct())
-                .pricePerProduct(orders.getPricePerProduct())
-                .totalQuantity(orders.getTotalQuantity())
+                .uid(orders.getUid())
+                .status(orders.getStatus())
                 .build();
     }
 

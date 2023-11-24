@@ -8,8 +8,6 @@ import lombok.Setter;
 public class UpdStockProductRequest {
     private Long productId;
     private int stockQuantity;
-    private Long categoryId;
-    private Long  stockId;
     private Float cost;
     private Float price;
 
@@ -18,8 +16,6 @@ public class UpdStockProductRequest {
         return "{" +
                 "productId=" + productId +
                 ", stockQuantity=" + stockQuantity +
-                ", categoryId=" + categoryId +
-                ", stockId=" + stockId +
                 ", cost=" + cost +
                 ", price=" + price +
                 '}';

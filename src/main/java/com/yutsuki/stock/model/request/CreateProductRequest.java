@@ -7,11 +7,11 @@ import lombok.Setter;
 @Setter
 public class CreateProductRequest {
     private String productName;
+    private String productImage;
     private Float price;
     private Float cost;
     private Integer stockQuantity;
     private Long categoryId;
-    private Long stockId;
 
     @Override
     public String toString() {
@@ -21,7 +21,6 @@ public class CreateProductRequest {
                 ", cost=" + cost +
                 ", stockQuantity=" + stockQuantity +
                 ", categoryId=" + categoryId +
-                ", stockId=" + stockId +
                 '}';
     }
 }

@@ -8,10 +8,9 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CreateOrdersResponse {
+    private String ordersId;
     private Long productId;
+    private Long uid;
     private String productName;
-    private Float totalPrice;
-    private Float costPerProduct;
-    private Float pricePerProduct;
-    private int  totalQuantity;
+    private Integer status;
 }

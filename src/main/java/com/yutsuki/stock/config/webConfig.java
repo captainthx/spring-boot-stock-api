@@ -71,7 +71,6 @@ public class webConfig {
         return new NimbusJwtEncoder(jwks);
     }
 
-
     @Bean
     PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -88,4 +87,8 @@ public class webConfig {
         source.registerCorsConfiguration("/**", corsConfiguration);
         return source;
     }
+
+
+
+
 }

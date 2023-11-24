@@ -25,8 +25,8 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseEntity<?> findAllProduct(Pagination pagination) {
-        return this.productService.findAllProduct(pagination);
+    public ResponseEntity<?> findAllProduct(Long categoryId,Pagination pagination) {
+        return this.productService.findAllProduct(categoryId,pagination);
     }
 
     @PatchMapping

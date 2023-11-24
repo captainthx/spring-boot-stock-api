@@ -8,7 +8,8 @@ import lombok.Setter;
 @Setter
 @Builder
 public class CreateProductResponse {
-    private Long id;
+    private Long productId;
+
     private Long categoryId;
     private String productName;
     private Integer stockQuantity;
@@ -18,7 +19,7 @@ public class CreateProductResponse {
     @Override
     public String toString() {
         return "{" +
-                "id=" + id +
+                "productId=" + productId +
                 ", categoryId=" + categoryId +
                 ", productName='" + productName + '\'' +
                 ", stockQuantity=" + stockQuantity +

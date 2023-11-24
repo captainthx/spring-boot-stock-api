@@ -52,6 +52,10 @@ public class ProductService {
             log.info("Create Product::(block). [invalid product name]. req: {}", request);
             return ResponseEntity.badRequest().body("invalid product name");
         }
+        if (Objects.isNull(request.getProductImage())){
+            log.info("Create Product::(block). [invalid product image]. req: {}", request);
+            return ResponseEntity.badRequest().body("invalid product image");
+        }
         if (Objects.isNull(request.getPrice())) {
             log.info("Create Product::(block). [invalid price]. req: {}", request);
             return ResponseEntity.badRequest().body("invalid price");
@@ -78,6 +82,7 @@ public class ProductService {
         // set to entity
         St_Product entity = new St_Product();
         entity.setProductName(request.getProductName());
+        entity.setProductImage(request.getProductImage());
         entity.setCategoryId(request.getCategoryId());
         entity.setStockQuantity(request.getStockQuantity());
         entity.setPrice(request.getPrice());
@@ -89,10 +94,10 @@ public class ProductService {
     }
 
 
-    public ResponseEntity<?> findAllProduct(Pagination pagination) {
+    public ResponseEntity<?> findAllProduct(Long categoryId,Pagination pagination) {
         Page<St_Product> productList;
-        if (pagination.getCategoryId() != null) {
-            productList = this.productRepository.findByCategoryId(pagination.getCategoryId(), pagination);
+        if (categoryId != null) {
+            productList = this.productRepository.findByCategoryId(categoryId, pagination);
         } else {
             productList = this.productRepository.findAll(pagination);
         }
@@ -113,9 +118,12 @@ public class ProductService {
         St_Product before = new St_Product();
         BeanUtils.copyProperties(product, before);
 
-        Optional.ofNullable(request.getCategoryId()).ifPresent(product::setCategoryId);
-        Optional.ofNullable(request.getCost()).filter(cost -> cost > 0).ifPresent(product::setCost);
-        Optional.ofNullable(request.getPrice()).filter(price -> price > 0).ifPresent(product::setPrice);
+      if (!Objects.isNull(request.getPrice()) && !product.getPrice().equals(request.getPrice())){
+            product.setPrice(request.getPrice());
+      }
+      if (!Objects.isNull(request.getCost()) &&!product.getCost().equals(request.getCost())){
+          product.setCost(request.getCost());
+      }
 
         product.setStockQuantity(product.getStockQuantity() + request.getStockQuantity());
         St_Product res = this.productRepository.save(product);
@@ -152,7 +160,7 @@ public class ProductService {
 
     private CreateProductResponse createResponse(St_Product product) {
         return CreateProductResponse.builder()
-                .id(product.getId())
+                .productId(product.getId())
                 .categoryId(product.getCategoryId())
                 .productName(product.getProductName())
                 .stockQuantity(product.getStockQuantity())
