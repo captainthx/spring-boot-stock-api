@@ -3,6 +3,7 @@ package com.yutsuki.stock.entity;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -13,6 +14,7 @@ import java.util.List;
 @Entity(name = "ST_account")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@DynamicUpdate
 public class St_account extends BaseEntity implements Serializable {
     private String username;
     private String password;

@@ -3,6 +3,7 @@ package com.yutsuki.stock.entity;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @Entity(name = "ST_loginLogs")
 @Data
 @EqualsAndHashCode(callSuper = true)
+@DynamicUpdate
 public class St_loginLogs extends BaseEntity implements Serializable {
     @Column(nullable = false, length = 32)
     private String ipv4;

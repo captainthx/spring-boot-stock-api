@@ -3,6 +3,7 @@ package com.yutsuki.stock.entity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.hibernate.annotations.DynamicUpdate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -13,6 +14,7 @@ import java.io.Serializable;
 @Data
 @Entity(name = "ST_product")
 @EqualsAndHashCode(callSuper = true)
+@DynamicUpdate
 public class St_Product extends BaseEntity implements Serializable {
     @Column(name = "categoryId")
     private Long categoryId;
